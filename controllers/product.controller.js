@@ -37,22 +37,49 @@ exports.product_details = function (req, res) {
     });
 };
 
-exports.product_update = function (req, res) {
-    Product.findByIdAndUpdate(req.params.id, { $set: req.body }, (err, product) => {
-        if (err) {
-            return next(err);
-        }
+// exports.product_update = function (req, res) {
+//     Product.findByIdAndUpdate(req.params.id, { $set: req.body }, (err, product) => {
+//         if (err) {
+//             return next(err);
+//         }
 
-        res.send('Product updated');
-    });
+//         res.send('Product updated');
+//     });
+// };
+
+exports.product_update = function (req, res) {
+    Product.updateOne(
+        { _id: req.params.id },
+        {
+            $set: {
+                name: req.body.name,
+                price: req.body.price
+            }
+        },
+        { upsert: true } // adds document if id does not exist
+    ).catch((err) => {
+        res.send(err);
+    })
+
+    res.send("Product Updated");
 };
 
-exports.product_delete = function (req, res) {
-    Product.findByIdAndRemove(req.params.id, (err) => {
-        if (err) {
-            return next(err);
-        }
+// exports.product_delete = function (req, res) {
+//     Product.findByIdAndRemove(req.params.id, (err) => {
+//         if (err) {
+//             return next(err);
+//         }
 
-        res.send('Deleted successfully');
-    });
+//         res.send('Deleted successfully');
+//     });
+// };
+
+exports.product_delete = function (req, res) {
+    Product.deleteOne(
+        { _id: req.params.id },
+    ).catch((err) => {
+        res.send(err);
+    })
+
+    res.send("Product Deleted");
 };
